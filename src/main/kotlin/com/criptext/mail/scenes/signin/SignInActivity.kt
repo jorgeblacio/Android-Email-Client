@@ -4,10 +4,7 @@ import com.criptext.mail.BaseActivity
 import com.criptext.mail.R
 import com.criptext.mail.api.HttpClient
 import com.criptext.mail.bgworker.AsyncTaskWorkRunner
-import com.criptext.mail.db.AppDatabase
-import com.criptext.mail.db.EventLocalDB
-import com.criptext.mail.db.KeyValueStorage
-import com.criptext.mail.db.SignInLocalDB
+import com.criptext.mail.db.*
 import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.signin.data.SignInDataSource
@@ -30,8 +27,8 @@ class SignInActivity : BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val appCtx = this.applicationContext
-        val db: SignInLocalDB.Default = SignInLocalDB.Default(appCtx, appCtx.filesDir)
-        val appDB = AppDatabase.getAppDatabase(appCtx)
+        val appDB = AccountsDatabase.getAppDatabase(appCtx)
+        val db: SignInLocalDB.Default = SignInLocalDB.Default(appDB, appCtx.filesDir)
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val signInSceneView = SignInScene.SignInSceneView(findViewById(R.id.signin_layout_container))
         val signInSceneModel = receivedModel as SignInSceneModel

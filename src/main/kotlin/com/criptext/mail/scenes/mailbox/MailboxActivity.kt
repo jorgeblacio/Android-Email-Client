@@ -60,8 +60,10 @@ class MailboxActivity : BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as MailboxSceneModel
-        val appDB = AppDatabase.getAppDatabase(this)
         val storage = KeyValueStorage.SharedPrefs(this)
+        val activeAccount = ActiveAccount.loadFromStorage(storage)
+        val appDB = AppDatabase.getAppDatabase(this, activeAccount!!.userEmail)
+
 
         // seedEmails(appDB)
         val controller =  initController(

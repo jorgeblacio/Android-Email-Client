@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
 import android.database.DatabaseUtils
+import android.database.sqlite.SQLiteCantOpenDatabaseException
 import android.util.Log
 import com.criptext.mail.db.dao.*
 import com.criptext.mail.db.dao.signal.RawIdentityKeyDao
@@ -20,8 +21,10 @@ import com.criptext.mail.db.models.signal.CRSignedPreKey
 import com.criptext.mail.db.typeConverters.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.sha256
 import io.requery.android.database.sqlite.RequerySQLiteOpenHelperFactory
+import java.io.File
 import java.util.*
 
 
@@ -64,13 +67,14 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private var INSTANCE : AppDatabase? = null
 
-        fun getAppDatabase(context: Context): AppDatabase {
+        fun getAppDatabase(context: Context, databaseName: String): AppDatabase {
             if(INSTANCE == null){
                 INSTANCE = Room.databaseBuilder(context,
                         AppDatabase::class.java,
-                        "encriptedMail1")
+                        databaseName)
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
-                                MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                                MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
+                                MIGRATION_9_10)
                         .openHelperFactory(RequerySQLiteOpenHelperFactory())
                         .build()
             }
@@ -176,6 +180,18 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("""ALTER TABLE email ADD COLUMN boundary TEXT DEFAULT NULL""")
                 database.execSQL("""ALTER TABLE file ADD COLUMN cid TEXT DEFAULT NULL""")
+            }
+        }
+
+        val MIGRATION_9_10: Migration = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                val account = database.query("""SELECT * FROM account LIMIT 1""")
+                account.moveToNext()
+                val newDBName = database.query("""SELECT * FROM account LIMIT 1""").getString(account.getColumnIndex("email"))
+                database.close()
+                val databaseFile = File(database.path)
+                val renamed = databaseFile.renameTo(File(databaseFile.parent, "$newDBName.db"))
+                if (!renamed) throw SQLiteCantOpenDatabaseException()
             }
         }
     }

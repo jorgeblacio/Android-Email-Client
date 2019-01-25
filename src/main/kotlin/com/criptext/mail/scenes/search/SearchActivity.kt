@@ -21,7 +21,8 @@ class SearchActivity : BaseActivity() {
     override val toolbarId = R.id.mailbox_toolbar
 
     override fun initController(receivedModel: Any): SceneController {
-        val appDB = AppDatabase.getAppDatabase(this)
+        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val appDB = AppDatabase.getAppDatabase(this, activeAccount!!.userEmail)
         val db : SearchLocalDB.Default = SearchLocalDB.Default(appDB, this.filesDir)
         val model = receivedModel as SearchSceneModel
         val scene = SearchScene.SearchSceneView(findViewById(R.id.rootView), KeyboardManager(this))
@@ -30,7 +31,7 @@ class SearchActivity : BaseActivity() {
                 model = model,
                 host = this,
                 storage = KeyValueStorage.SharedPrefs(this.applicationContext),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 dataSource = SearchDataSource(db, AsyncTaskWorkRunner()))
     }
 }

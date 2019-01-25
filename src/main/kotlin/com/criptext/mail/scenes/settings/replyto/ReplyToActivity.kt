@@ -21,13 +21,14 @@ class ReplyToActivity: BaseActivity(){
     override fun initController(receivedModel: Any): SceneController {
         val model = receivedModel as ReplyToModel
         val view = findViewById<ViewGroup>(R.id.main_content)
-        val appDB = AppDatabase.getAppDatabase(this)
+        val activeAccount = ActiveAccount.loadFromStorage(this)
+        val appDB = AppDatabase.getAppDatabase(this, activeAccount!!.userEmail)
         val scene = ReplyToScene.Default(view)
         val db = SettingsLocalDB.Default(appDB)
         val dataSource = ReplyToDataSource(
                 settingsLocalDB = db,
                 httpClient = HttpClient.Default(),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 runner = AsyncTaskWorkRunner(),
                 storage = KeyValueStorage.SharedPrefs(this))
         return ReplyToController(
@@ -36,7 +37,7 @@ class ReplyToActivity: BaseActivity(){
                 dataSource = dataSource,
                 keyboardManager = KeyboardManager(this),
                 storage = KeyValueStorage.SharedPrefs(this),
-                activeAccount = ActiveAccount.loadFromStorage(this)!!,
+                activeAccount = activeAccount,
                 host = this)
     }
 

@@ -13,6 +13,7 @@ import com.criptext.mail.db.models.ActiveAccount
 import com.criptext.mail.scenes.signup.data.StoreAccountTransaction
 import com.criptext.mail.services.MessagingInstance
 import com.criptext.mail.signal.SignalKeyGenerator
+import com.criptext.mail.utils.EmailAddressUtils
 import com.criptext.mail.utils.UIMessage
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMap

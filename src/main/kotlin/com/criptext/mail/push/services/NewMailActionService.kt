@@ -33,7 +33,8 @@ class NewMailActionService : IntentService("New Mail Action Service") {
         val requestHandler = PushAPIRequestHandler(NotificationError(this), manager,
                 ActiveAccount.loadFromStorage(this)!!, HttpClient.Default(),
                 storage)
-        val db = AppDatabase.getAppDatabase(this)
+        val account = ActiveAccount.loadFromStorage(this)
+        val db = AppDatabase.getAppDatabase(this, account!!.userEmail)
 
         when (data.action){
             READ -> {

@@ -38,7 +38,7 @@ class ComposerActivity : BaseActivity() {
         val httpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val model = receivedModel as ComposerModel
         val view = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
-        val appDB = AppDatabase.getAppDatabase(this)
+        val appDB = AppDatabase.getAppDatabase(this, ActiveAccount.loadFromStorage(this)!!.userEmail)
         val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val scene = ComposerScene.Default(view, KeyboardManager(this))
         val db = ComposerLocalDB(contactDao = appDB.contactDao(), emailDao = appDB.emailDao(),

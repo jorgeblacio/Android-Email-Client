@@ -1,6 +1,7 @@
 package com.criptext.mail.scenes.emaildetail
 
 import android.view.ContextMenu
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import com.criptext.mail.BaseActivity
@@ -21,18 +22,6 @@ import com.criptext.mail.utils.KeyboardManager
 import com.criptext.mail.utils.file.AndroidFs
 import com.criptext.mail.utils.generaldatasource.data.GeneralDataSource
 import com.criptext.mail.websocket.WebSocketSingleton
-import android.webkit.WebView.HitTestResult
-import android.view.MenuInflater
-import android.view.MenuItem
-import com.criptext.mail.R.string.save
-import android.widget.AdapterView.AdapterContextMenuInfo
-
-
-
-
-
-
-
 
 
 /**
@@ -46,7 +35,7 @@ class  EmailDetailActivity: BaseActivity() {
 
     override fun initController(receivedModel: Any): SceneController {
 
-        val appDB = AppDatabase.getAppDatabase(this.applicationContext)
+        val appDB = AppDatabase.getAppDatabase(this.applicationContext, ActiveAccount.loadFromStorage(this)!!.userEmail)
         val filesHttpClient = HttpClient.Default(Hosts.fileServiceUrl, HttpClient.AuthScheme.jwt, 14000L, 7000L)
         val db: EmailDetailLocalDB.Default =
                 EmailDetailLocalDB.Default(appDB, this.filesDir)

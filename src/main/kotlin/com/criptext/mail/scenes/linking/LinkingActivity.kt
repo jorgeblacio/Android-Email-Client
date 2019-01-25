@@ -27,9 +27,9 @@ class LinkingActivity: BaseActivity(){
         val model = receivedModel as LinkingModel
         val view = findViewById<ViewGroup>(R.id.main_content)
         val scene = LinkingScene.Default(view)
-        val appDB = AppDatabase.getAppDatabase(this)
-        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val activeAccount = ActiveAccount.loadFromStorage(this)
+        val appDB = AppDatabase.getAppDatabase(this, activeAccount!!.userEmail)
+        val signalClient = SignalClient.Default(SignalStoreCriptext(appDB))
         val webSocketEvents = WebSocketSingleton.getInstance(
                 activeAccount = activeAccount!!)
 

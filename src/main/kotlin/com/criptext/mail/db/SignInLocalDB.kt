@@ -15,14 +15,12 @@ interface SignInLocalDB {
     fun deleteDatabase(user: String)
     fun deleteDatabase()
 
-    class Default(applicationContext: Context, private val filesDir: File): SignInLocalDB {
-
-        private val db = AppDatabase.getAppDatabase(applicationContext)
+    class Default(private val db: AccountsDatabase, private val filesDir: File): SignInLocalDB {
 
         override fun accountExistsLocally(username: String): Boolean {
-            val account = db.accountDao().getLoggedInAccount()
+            val account = db.accountDao().getLoggedInAccount(username)
             if(account == null) return false
-            else if(account.recipientId == username) return true
+            else if(account.email == username) return true
             return false
         }
 

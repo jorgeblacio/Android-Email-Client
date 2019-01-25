@@ -22,11 +22,11 @@ class MessagingService : FirebaseMessagingService(){
 
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        val account = ActiveAccount.loadFromStorage(this) ?: return
         if(pushController == null){
-            val db = Result.of { AppDatabase.getAppDatabase(this) }
+            val db = Result.of { AppDatabase.getAppDatabase(this, account.userEmail) }
             if(db is Result.Success) {
                 val storage = KeyValueStorage.SharedPrefs(this)
-                val account = ActiveAccount.loadFromStorage(this) ?: return
                 pushController = PushController(
                         dataSource = PushDataSource(db = db.value,
                                 runner = AsyncTaskWorkRunner(),

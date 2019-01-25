@@ -80,7 +80,7 @@ class LockScreenActivity: AppLockActivity(){
     private fun getDataSource(): GeneralDataSource{
         val storage = KeyValueStorage.SharedPrefs(this)
         val activeAccount = ActiveAccount.loadFromStorage(storage)
-        val db = AppDatabase.getAppDatabase(this)
+        val db = AppDatabase.getAppDatabase(this, activeAccount!!.userEmail)
         val dataSourceListener: (GeneralResult) -> Unit = { result ->
             when(result) {
                 is GeneralResult.Logout -> onLogout(result)
