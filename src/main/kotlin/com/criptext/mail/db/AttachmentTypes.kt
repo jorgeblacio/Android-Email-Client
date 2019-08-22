@@ -23,4 +23,8 @@ enum class AttachmentTypes {
             VIDEO -> R.drawable.video
         }
     }
+
+    fun fromText(text: String): AttachmentTypes{
+        return valueOf(text)
+    }
 }

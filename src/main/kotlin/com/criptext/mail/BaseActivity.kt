@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.criptext.mail.db.KeyValueStorage
 import com.criptext.mail.db.models.ActiveAccount
+import com.criptext.mail.db.models.Contact
 import com.criptext.mail.db.models.Label
 import com.criptext.mail.email_preview.EmailPreview
 import com.criptext.mail.push.data.IntentExtrasData
@@ -31,6 +32,7 @@ import com.criptext.mail.scenes.SceneController
 import com.criptext.mail.scenes.SceneModel
 import com.criptext.mail.scenes.WebViewActivity
 import com.criptext.mail.scenes.composer.ComposerModel
+import com.criptext.mail.scenes.composer.data.ComposerAttachment
 import com.criptext.mail.scenes.composer.data.ComposerType
 import com.criptext.mail.scenes.emaildetail.EmailDetailSceneModel
 import com.criptext.mail.scenes.linking.LinkingModel
@@ -86,6 +88,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.lang.Exception
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -148,9 +151,17 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
                     )
                 }
                 COMPOSER_MODEL -> {
-                    ComposerModel(
+                    val composerModel = ComposerModel(
                             type = ComposerType.fromJSON(savedInstanceState.getString("composerType")!!, this)
                     )
+                    composerModel.subject = savedInstanceState.getString("subject")!!
+                    composerModel.body = savedInstanceState.getString("body")!!
+                    composerModel.to = LinkedList(Contact.fromJSONArray(savedInstanceState.getString("to")!!))
+                    composerModel.cc = LinkedList(Contact.fromJSONArray(savedInstanceState.getString("cc")!!))
+                    composerModel.bcc = LinkedList(Contact.fromJSONArray(savedInstanceState.getString("bcc")!!))
+                    composerModel.attachments = ArrayList(ComposerAttachment.fromJSONArray(savedInstanceState.getString("attachments")!!))
+                    composerModel.fileKey = savedInstanceState.getString("fileKey")
+                    composerModel
                 }
                 PROFILE_MODEL -> {
                     ProfileModel(savedInstanceState.getBoolean("comesFromMailbox"))
@@ -275,6 +286,13 @@ abstract class BaseActivity: PinCompatActivity(), IHostActivity {
             is ComposerModel -> {
                 outState.putString("type", COMPOSER_MODEL)
                 outState.putString("composerType", ComposerType.toJSON(currentModel.type))
+                outState.putString("subject", currentModel.subject)
+                outState.putString("body", currentModel.body)
+                outState.putString("to", Contact.toJSON(currentModel.to).toString())
+                outState.putString("cc", Contact.toJSON(currentModel.cc).toString())
+                outState.putString("bcc", Contact.toJSON(currentModel.bcc).toString())
+                outState.putString("attachments", ComposerAttachment.toJSON(currentModel.attachments).toString())
+                outState.putString("fileKey", currentModel.fileKey)
             }
             is PrivacyModel -> {
                 outState.putString("type", PRIVACY_MODEL)
